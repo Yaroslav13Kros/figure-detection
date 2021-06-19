@@ -10,18 +10,16 @@ import numpy as np
 def empty(a):
   pass
 
+
+
+
+# circle
+# rectangle
+# triangle
+
 TrackBars = "TrackBars"
-title_trackbar_element_shape = 'Element:\n 0: Rect \n 1: Cross \n 2: Ellipse'
-title_trackbar_kernel_size = 'Kernel size:\n 2n +1'
-title_erosion_window = 'Erosion Demo'
-title_dilation_window = 'Dilation Demo'
-
-erosion_size = 0
-max_elem = 2
-max_kernel_size = 21
-
-cv2.namedWindow("TrackBars")
-cv2.resizeWindow("TrackBars", 840, 640)
+cv2.namedWindow(TrackBars)
+cv2.resizeWindow(TrackBars, 840, 640)
 cv2.createTrackbar("Hue Min", TrackBars, 80, 179, empty)
 cv2.createTrackbar("Hue Max", TrackBars, 137, 179, empty)
 cv2.createTrackbar("Sat Min", TrackBars, 0, 255, empty)
@@ -69,18 +67,32 @@ def stackImages(scale, imgArray):
 
 def getCountours(img, imgContours):
   contours, hierarchy = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
-  print(len(contours))
+  # print(len(contours))
   for cnt in contours:
     area = cv2.contourArea(cnt)
     area_min = cv2.getTrackbarPos("Min Area", TrackBars)
     if area > area_min:
-      cv2.drawContours(imgContours, cnt, -1, (255, 0, 255), 7)
       peri = cv2.arcLength(cnt, True)
       approx = cv2.approxPolyDP(cnt, 0.04 * peri, True)
-      # print(len(approx))
+      print(len(approx))
+      objCorn = len(approx)
       x_, y_, w_, h_ = cv2.boundingRect(approx)
-      # print(area)
-      cv2.rectangle(imgContours, (x_,y_), (x_ + w_, y_ + h_), (0, 255, 0), 5)
+
+      objColar = (0, 0, 0)
+      if objCorn == 3:
+        objectType = "Triangle"
+        objColar = (255, 0, 0)
+      elif objCorn == 4:
+          objectType = "Rectangle"
+          objColar = (0, 255, 0)
+      elif objCorn > 4:
+        objectType = "Circles"
+        objColar = (0, 0, 255)
+      else:
+        objectType = "None"
+
+      cv2.rectangle(imgContours, (x_,y_), (x_ + w_, y_ + h_), objColar, 5)
+      cv2.putText(imgContours, objectType, (x_, y_), cv2.FONT_HERSHEY_COMPLEX, 1, (0,0,0), 1)
 
 
 
