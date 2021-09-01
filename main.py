@@ -10,13 +10,6 @@ import numpy as np
 def empty(a):
   pass
 
-
-
-
-# circle
-# rectangle
-# triangle
-
 TrackBars = "TrackBars"
 cv2.namedWindow(TrackBars)
 cv2.resizeWindow(TrackBars, 840, 640)
@@ -127,6 +120,11 @@ cap = cv2.VideoCapture('D:\It_Jim\Internship2021testtask.mp4')
 if (cap.isOpened()== False):
   print("Error opening video stream or file")
 
+frame_width = int(cap.get(3))
+frame_height = int(cap.get(4))
+
+out = cv2.VideoWriter('D:\It_Jim\\task1_res_mp4.avi', cv2.VideoWriter_fourcc(*'XVID'), 5, (frame_width, frame_height))
+
 pause = False
 # Read until video is completed
 ret, frame = cap.read()
@@ -156,8 +154,10 @@ while(cap.isOpened()):
     getCountours(edges, img_contour)
     imgStack = stackImages(0.25, ([frame, gauss, imgResult],[mask, dialation, img_contour]))
 
+    out.write(img_contour)
     cv2.imshow("Result", imgStack)
     cv2.imshow("Result contur", img_contour)
+
 
     # Press Q on keyboard to  exit
     if cv2.waitKey(1) & 0xFF == ord('p'):
@@ -173,6 +173,7 @@ while(cap.isOpened()):
 
 # When everything done, release the video capture object
 cap.release()
+out.release()
 
 # Closes all the frames
 cv2.destroyAllWindows()
